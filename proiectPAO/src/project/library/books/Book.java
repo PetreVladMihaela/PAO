@@ -1,7 +1,5 @@
 package project.library.books;
 
-import com.sun.istack.internal.NotNull;
-
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Set;

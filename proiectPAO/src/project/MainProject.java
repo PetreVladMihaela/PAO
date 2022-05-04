@@ -48,15 +48,6 @@ public class MainProject {
             System.out.println(str+"\n");
         }
     }
-    public static void printAuthorsHashmap(HashMap<Author, Set<Book>> members) {
-        String delimiter = ";\n\n";
-        String prefix = "[";
-        String suffix = "]";
-
-        if (members.isEmpty()) {
-            System.out.println("No match found.");
-        }
-    }
 
     public static void main(String[] args) {
         LibraryService libraryService = new LibraryMemoryService();

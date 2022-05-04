@@ -2,7 +2,6 @@ package project.library;
 
 import project.library.books.Author;
 import project.library.books.Book;
-import project.library.books.nonfiction.Autobiography;
 import project.library.members.LibraryMember;
 
 import java.util.HashMap;
