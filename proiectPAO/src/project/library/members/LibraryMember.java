@@ -149,7 +149,7 @@ public class LibraryMember implements Comparable<LibraryMember> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getEmail(), getPhone(), getAddress(), getBorrowedBooks(),
+        return Objects.hash(getName(), getEmail(), getPhone(), getAddress(),
                 getMembershipStarted(), getMembershipExpires());
     }
 
@@ -160,8 +160,8 @@ public class LibraryMember implements Comparable<LibraryMember> {
     public static class LibraryMemberBuilder {
         //private int id;
         private String name = "anonymous";
-        private String email;
-        private String phone;
+        private String email = " ";
+        private String phone = " ";
         private Address address;
         private LinkedList<Book> borrowedBooks = new LinkedList<>();
         private LocalDate membershipStarted = LocalDate.now();

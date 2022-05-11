@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public abstract class Book {
-    //private int id;
+    private int id;
     private String title;
     private Set<Author> authors;
     private LocalDate datePublished;
@@ -17,6 +17,12 @@ public abstract class Book {
         this.datePublished = builder.datePublished;
         this.copiesInLibrary = builder.copiesInLibrary;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) { this.id = id; }
 
     public String getTitle() {
         return title;
@@ -52,7 +58,7 @@ public abstract class Book {
 
     @Override
     public String toString() {
-        return "Book: title='" + title + "',\n" +
+        return "Book: id=" + id + ", title='" + title + "',\n" +
                 "      authors=" + authors + ",\n" +
                 "      datePublished=" + datePublished + ",\n" +
                 "      copiesInLibrary=" + copiesInLibrary;

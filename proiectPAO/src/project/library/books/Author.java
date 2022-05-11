@@ -1,14 +1,24 @@
 package project.library.books;
 
+import project.library.members.LibraryMember;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class Author {
-    //private int id;
+public class Author implements Comparable<Author> {
+    private int id;
     private String name;
     private String country;
     private LocalDate dateBorn;
     private LocalDate dateDied;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -58,6 +68,14 @@ public class Author {
         return Objects.hash(getName(), getCountry(), getDateBorn(), getDateDied());
     }
 
+    @Override
+    public int compareTo(Author o) {
+        if (this.equals(o)) {
+            return 0;
+        }
+        else return this.id - o.id;
+    }
+
     public static AuthorBuilder newAuthor() {
         return new AuthorBuilder();
     }
@@ -65,7 +83,7 @@ public class Author {
     public static class AuthorBuilder {
         //private int id;
         private String name = "unknown";
-        private String country;
+        private String country = "null";
         private LocalDate dateBorn;
         private LocalDate dateDied;
 
@@ -101,8 +119,7 @@ public class Author {
 
     @Override
     public String toString() {
-        return "Author{" +
-                "name=" + name + ", country=" + country +
+        return "Author{" + "name=" + name + ", country=" + country +
                 ", dateBorn=" + dateBorn + ", dateDied=" + dateDied + '}';
     }
 }

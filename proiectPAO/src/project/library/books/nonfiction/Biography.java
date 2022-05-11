@@ -10,7 +10,7 @@ public class Biography extends Autobiography{
 
     @Override
     public String getSubcategory() {
-        return "biography";
+        return "Biography";
     }
 
     public String getWhoItIsAbout() {

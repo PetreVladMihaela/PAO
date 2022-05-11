@@ -88,8 +88,8 @@ public class FictionBook extends Book {
 
     public static class FictionBookBuilder extends BookBuilder<FictionBookBuilder> {
         private int yearWritten;
-        private String originalLanguage;
-        private String translatedInto;
+        private String originalLanguage = " ";
+        private String translatedInto = " ";
 
         @Override
         public FictionBookBuilder getThisBase() {
