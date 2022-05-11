@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public interface LibraryService {
+    //private void audit(String actiune);
+
     void addBooks(Book... books);
 
     void addMembers(LibraryMember... members);

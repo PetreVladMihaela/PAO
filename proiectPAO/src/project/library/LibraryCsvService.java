@@ -10,6 +10,8 @@ import project.library.members.Address;
 import project.library.members.LibraryMember;
 
 import java.io.*;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Predicate;
@@ -24,6 +26,9 @@ public class LibraryCsvService implements LibraryService {
     private final File membersCsvFile;
     private final File borrowedBooksCsvFile;
     private final File novelsCsvFile;
+    private final File auditCsvFile;
+
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private void checkFileExists(File file) {
         if(!file.exists()) {
@@ -38,16 +43,29 @@ public class LibraryCsvService implements LibraryService {
     }
 
     public LibraryCsvService() {
-        booksCsvFile = new File("src/project/library/BooksCsvFile.csv");
-        authorsCsvFile = new File("src/project/library/AuthorsCsvFile.csv");
-        membersCsvFile = new File("src/project/library/MembersCsvFile.csv");
-        borrowedBooksCsvFile = new File("src/project/library/BorrowedBooksCsvFile.csv");
-        novelsCsvFile = new File("src/project/library/NovelsCsvFile.csv");
+        booksCsvFile = new File("PAO/ProiectPAO/src/project/library/BooksCsvFile.csv");
+        authorsCsvFile = new File("PAO/ProiectPAO/src/project/library/AuthorsCsvFile.csv");
+        membersCsvFile = new File("PAO/ProiectPAO/src/project/library/MembersCsvFile.csv");
+        borrowedBooksCsvFile = new File("PAO/ProiectPAO/src/project/library/BorrowedBooksCsvFile.csv");
+        novelsCsvFile = new File("PAO/ProiectPAO/src/project/library/NovelsCsvFile.csv");
+        auditCsvFile = new File("PAO/ProiectPAO/src/project/library/AuditFile.csv");
         checkFileExists(booksCsvFile);
         checkFileExists(authorsCsvFile);
         checkFileExists(membersCsvFile);
         checkFileExists(borrowedBooksCsvFile);
         checkFileExists(novelsCsvFile);
+        checkFileExists(auditCsvFile);
+    }
+
+    private void audit(String action) {
+        try (FileWriter fileWriter = new FileWriter(auditCsvFile, true)) {
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            bufferedWriter.write(action+","+sdf.format(timestamp)+"\n");
+            bufferedWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -78,6 +96,7 @@ public class LibraryCsvService implements LibraryService {
                             author.setId(lastId);
                             bufferedWriter2.write(authorFormatForCsv(author));
                         }
+                        audit("Added Authors");
                         bufferedWriter2.close();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -92,9 +111,12 @@ public class LibraryCsvService implements LibraryService {
                 lastBookId++;
                 book.setId(lastBookId);
                 bufferedWriter1.write(bookFormatForCsv(book));
-                if (Objects.equals(book.getSubcategory(), "Novel"))
+                if (Objects.equals(book.getSubcategory(), "Novel")) {
                     writeNovelToFile((Novel) book);
+                    audit("Added Novel");
+                }
             }
+            audit("Added Books");
             bufferedWriter1.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -187,6 +209,7 @@ public class LibraryCsvService implements LibraryService {
                 bufferedWriter1.write(memberFormatForCsv(member));
                 allMembers.add(member);
             }
+            audit("Added Members");
             bufferedWriter1.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -208,6 +231,7 @@ public class LibraryCsvService implements LibraryService {
     public SortedSet<LibraryMember> getAllMembers() {
         try (FileReader fileReader = new FileReader(membersCsvFile)) {
             BufferedReader bufferedReader = new BufferedReader(fileReader);
+            audit("Fetched All Members");
             return bufferedReader.lines()
                     .map(this::getMemberFromCsvLine)
                     .collect(Collectors.toCollection(TreeSet::new));
@@ -255,6 +279,7 @@ public class LibraryCsvService implements LibraryService {
     public LinkedHashSet<Book> getAllBooksSortedAlphabetically() {
         try (FileReader fileReader = new FileReader(booksCsvFile)) {
             BufferedReader bufferedReader = new BufferedReader(fileReader);
+            audit("Fetched All Books");
             return bufferedReader.lines()
                     .map(this::getBookFromCsvLine)
                     .sorted(Comparator.comparing(Book::getTitle))
@@ -297,6 +322,7 @@ public class LibraryCsvService implements LibraryService {
     public SortedSet<Author> getAllAuthors() {
         try (FileReader fileReader = new FileReader(authorsCsvFile)) {
             BufferedReader bufferedReader = new BufferedReader(fileReader);
+            audit("Fetched All Authors");
             return bufferedReader.lines()
                     .map(this::getAuthorFromCsvLine)
                     .collect(Collectors.toCollection(TreeSet::new));
@@ -356,6 +382,7 @@ public class LibraryCsvService implements LibraryService {
         }
         try(FileWriter fileWriter = new FileWriter(booksCsvFile, false)) {
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            audit("Deleted Books");
             for(Book book : remainingBooks) {
                 bufferedWriter.write(bookFormatForCsv(book));
             }
@@ -374,6 +401,7 @@ public class LibraryCsvService implements LibraryService {
         try(FileWriter fileWriter = new FileWriter(authorsCsvFile, false)) {
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
+            audit("Deleted Authors");
             for(Author author : remainingAuthors) {
                 bufferedWriter.write(authorFormatForCsv(author));
             }
@@ -391,6 +419,7 @@ public class LibraryCsvService implements LibraryService {
 
     @Override
     public LinkedHashSet<Book> getBooksByTitle(String title) {
+        audit("Fetched Books By Title");
         return getAllBooksSortedAlphabetically().stream()
                 .filter(book -> book.getTitle().equals(title))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
@@ -406,6 +435,7 @@ public class LibraryCsvService implements LibraryService {
 
     @Override
     public LinkedHashSet<Book> getBooksByAuthorName(String authorName) {
+        audit("Fetched Books By Author Name");
         return getAllBooksSortedAlphabetically().stream()
                 .filter(book -> nonNull(book.getAuthors()))
                 .filter(book -> book.getAuthors().stream()
@@ -415,6 +445,7 @@ public class LibraryCsvService implements LibraryService {
 
     @Override
     public LinkedHashSet<Book> getBooksByCategory(String category) {
+        audit("Fetched Books By Category");
         return getAllBooksSortedAlphabetically().stream()
                 .filter(book -> book.getCategory().equalsIgnoreCase(category))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
@@ -422,6 +453,7 @@ public class LibraryCsvService implements LibraryService {
 
     @Override
     public LibraryMember getMemberById(int id) {
+        audit("Fetched Member By Id");
         Optional<LibraryMember> optionalMember = getAllMembers().stream()
                 .filter(member -> member.getId()==id)
                 .findFirst();
@@ -430,6 +462,7 @@ public class LibraryCsvService implements LibraryService {
 
     @Override
     public Set<LibraryMember> getMembersWithExpiredMembership() {
+        audit("Fetched Members With Expired Membership");
         return getAllMembers().stream()
                 .filter(member -> LocalDate.now().compareTo(member.getMembershipExpires()) > 0)
                 .collect(Collectors.toSet());
@@ -446,6 +479,7 @@ public class LibraryCsvService implements LibraryService {
                         //member.borrowBook(book);
                         bufferedWriter.write(member.getId() + "," + book.getTitle() + "\n");
                     }
+                audit("Added Borrowed Book To Member");
                 bufferedWriter.close();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -470,6 +504,7 @@ public class LibraryCsvService implements LibraryService {
                         .collect(Collectors.toList());
                 try(FileWriter fileWriter = new FileWriter(borrowedBooksCsvFile, false)) {
                     BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                    audit("Returned Borrowed Books");
                     for(String[] line : remaining) {
                         bufferedWriter.write(line[0]+","+line[1]+"\n");
                     }
@@ -515,6 +550,7 @@ public class LibraryCsvService implements LibraryService {
             for (LibraryMember member : remainingMembers) {
                 bufferedWriter.write(memberFormatForCsv(member));
             }
+            audit("Deleted Members");
             bufferedWriter.close();
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -523,6 +559,7 @@ public class LibraryCsvService implements LibraryService {
 
     @Override
     public LinkedHashSet<Book> getNovelsByGenre(String genre) {
+        audit("Fetched Novels By Genre");
         return getAllNovels().stream()
                 .filter(novel -> nonNull(novel.getGenres()))
                 .filter(novel -> novel.getGenres().stream().
