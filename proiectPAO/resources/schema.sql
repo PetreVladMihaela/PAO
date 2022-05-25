@@ -18,14 +18,24 @@ CREATE TABLE `proiect_pao`.`novels` (
   `novelTitle` VARCHAR(100) NOT NULL DEFAULT 'no title',
   `genres` VARCHAR(100) NULL,
   `themes` VARCHAR(100) NULL,
-  PRIMARY KEY (`bookId`));
+  PRIMARY KEY (`bookId`),
+  CONSTRAINT `bookIdFK1`
+    FOREIGN KEY (`bookId`)
+    REFERENCES `proiect_pao`.`books` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE);
   
 CREATE TABLE `proiect_pao`.`dramas` (
   `bookId` INT NOT NULL,
   `dramaTitle` VARCHAR(100) NOT NULL DEFAULT 'no title',
   `dramaGenre` VARCHAR(30) NULL,
   `themes` VARCHAR(100) NULL,
-  PRIMARY KEY (`bookId`));
+  PRIMARY KEY (`bookId`),
+  CONSTRAINT `bookIdFK2`
+    FOREIGN KEY (`bookId`)
+    REFERENCES `proiect_pao`.`books` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE);
   
 CREATE TABLE `proiect_pao`.`textbooks` (
   `bookId` INT NOT NULL,
@@ -33,7 +43,12 @@ CREATE TABLE `proiect_pao`.`textbooks` (
   `domain` VARCHAR(50) NULL,
   `subject` VARCHAR(50) NULL,
   `level` VARCHAR(50) NULL,
-  PRIMARY KEY (`bookId`));
+  PRIMARY KEY (`bookId`),
+  CONSTRAINT `bookIdFK3`
+    FOREIGN KEY (`bookId`)
+    REFERENCES `proiect_pao`.`books` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE);
   
 CREATE TABLE `proiect_pao`.`dictionaries` (
   `bookId` INT NOT NULL,
@@ -41,7 +56,12 @@ CREATE TABLE `proiect_pao`.`dictionaries` (
   `type` VARCHAR(50) NULL,
   `targetLanguage` VARCHAR(50) NULL,
   `field` VARCHAR(50) NULL,
-  PRIMARY KEY (`bookId`));
+  PRIMARY KEY (`bookId`),
+  CONSTRAINT `bookIdFK4`
+    FOREIGN KEY (`bookId`)
+    REFERENCES `proiect_pao`.`books` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE);
   
 CREATE TABLE `proiect_pao`.`authors` (
   `id` INT NOT NULL AUTO_INCREMENT,
