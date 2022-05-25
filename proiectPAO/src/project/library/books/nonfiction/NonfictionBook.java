@@ -22,11 +22,6 @@ public class NonfictionBook extends Book {
         return "Nonfiction";
     }
 
-    @Override
-    public String getSubcategory() {
-        return null;
-    }
-
     public String getLanguage() {
         return language;
     }
@@ -83,7 +78,7 @@ public class NonfictionBook extends Book {
     public abstract static class AbstractNonfictionBuilder<T extends AbstractNonfictionBuilder<T>>
             extends BookBuilder<AbstractNonfictionBuilder<T>>
     {
-        private String language;
+        private String language = " ";
 
         @Override
         public AbstractNonfictionBuilder<T> getThisBase() {

@@ -28,11 +28,6 @@ public class FictionBook extends Book {
         return "Fiction";
     }
 
-    @Override
-    public String getSubcategory() {
-        return null;
-    }
-
     public int getYearWritten() {
         return yearWritten;
     }

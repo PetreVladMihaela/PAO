@@ -1,19 +1,25 @@
 package project.library.members;
 
+import java.util.Objects;
+
 public class Address {
     private String country;
     private String city;
     private String street;
 
     public Address(String country, String city, String street) {
-        this.country = country;
-        this.city = city;
+        if (country == null) this.country = "-";
+        else this.country = country;
+        if (city == null) this.city = "-";
+        else this.city = city;
         this.street = street;
     }
 
     public Address(String country, String city) {
-        this.country = country;
-        this.city = city;
+        if (country == null) this.country = "-";
+        else this.country = country;
+        if (city == null) this.city = "-";
+        else this.city = city;
     }
 
     public String getCountry() {
@@ -47,5 +53,18 @@ public class Address {
                 ", city='" + city + '\'' +
                 ", street='" + street + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Address)) return false;
+        Address address = (Address) o;
+        return Objects.equals(getCountry(), address.getCountry()) && Objects.equals(getCity(), address.getCity()) && Objects.equals(getStreet(), address.getStreet());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getCountry(), getCity(), getStreet());
     }
 }

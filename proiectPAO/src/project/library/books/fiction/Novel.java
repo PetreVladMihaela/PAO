@@ -11,11 +11,7 @@ public class Novel extends FictionBook {
         super(builder);
         this.genres = builder.genres;
         this.themes = builder.themes;
-    }
-
-    @Override
-    public String getSubcategory() {
-        return "Novel";
+        super.setSubcategory("Novel");
     }
 
     public Set<String> getGenres() {

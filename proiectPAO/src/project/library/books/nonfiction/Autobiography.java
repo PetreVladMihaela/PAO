@@ -1,21 +1,19 @@
 package project.library.books.nonfiction;
 
+import java.util.Objects;
+
 public class Autobiography extends NonfictionBook {
     private String translatedFrom;
 
     protected Autobiography(AutobiographyBuilder builder) {
         super(builder);
         this.translatedFrom = builder.translatedFrom;
+        super.setSubcategory("Autobiography");
     }
 
     protected Autobiography(AbstractAutobioBuilder<?> builder) {
         super(builder);
         this.translatedFrom = builder.translatedFrom;
-    }
-
-    @Override
-    public String getSubcategory() {
-        return "Autobiography";
     }
 
     public String getTranslatedFrom() {
@@ -31,6 +29,20 @@ public class Autobiography extends NonfictionBook {
         return super.toString() + ",\n" +
                 "      subcategory=" + getSubcategory() + ",\n" +
                 "      translatedFrom=" + translatedFrom;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Autobiography)) return false;
+        if (!super.equals(o)) return false;
+        Autobiography that = (Autobiography) o;
+        return Objects.equals(getTranslatedFrom(), that.getTranslatedFrom());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getTranslatedFrom());
     }
 
     public static AutobiographyBuilder newAutobiography() {

@@ -97,6 +97,8 @@ public class LibraryMember implements Comparable<LibraryMember> {
             this.borrowedBooks.add(book);
             book.setCopiesInLibrary(copies-1);
         }
+        else
+            System.out.println("There are no more copies of "+book.getTitle()+" in the library.");
     }
 
     public void returnBooks(Book... returnedBooks) {
@@ -149,8 +151,7 @@ public class LibraryMember implements Comparable<LibraryMember> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getName(), getEmail(), getPhone(), getAddress(),
-                getMembershipStarted(), getMembershipExpires());
+        return Objects.hash(getName(), getEmail(), getPhone());
     }
 
     public static LibraryMemberBuilder newMember() {
@@ -160,8 +161,8 @@ public class LibraryMember implements Comparable<LibraryMember> {
     public static class LibraryMemberBuilder {
         //private int id;
         private String name = "anonymous";
-        private String email = " ";
-        private String phone = " ";
+        private String email = "-";
+        private String phone = "-";
         private Address address;
         private LinkedList<Book> borrowedBooks = new LinkedList<>();
         private LocalDate membershipStarted = LocalDate.now();

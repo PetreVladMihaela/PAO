@@ -1,7 +1,5 @@
 package project.library.books;
 
-import project.library.members.LibraryMember;
-
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -119,7 +117,7 @@ public class Author implements Comparable<Author> {
 
     @Override
     public String toString() {
-        return "Author{" + "name=" + name + ", country=" + country +
+        return "Author{name=" + name + ", country=" + country +
                 ", dateBorn=" + dateBorn + ", dateDied=" + dateDied + '}';
     }
 }

@@ -12,11 +12,7 @@ public class Textbook extends NonfictionBook {
         this.domain = builder.domain;
         this.subject = builder.subject;
         this.level = builder.level;
-    }
-
-    @Override
-    public String getSubcategory() {
-        return "Textbook";
+        super.setSubcategory("Textbook");
     }
 
     public String getDomain() {

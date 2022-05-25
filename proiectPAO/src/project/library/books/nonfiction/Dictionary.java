@@ -12,11 +12,7 @@ public class Dictionary extends NonfictionBook {
         this.type = builder.type;
         this.targetLanguage = builder.targetLanguage;
         this.field = builder.field;
-    }
-
-    @Override
-    public String getSubcategory() {
-        return "Dictionary";
+        super.setSubcategory("Dictionary");
     }
 
     public String getType() {

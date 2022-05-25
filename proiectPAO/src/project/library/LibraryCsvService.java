@@ -14,7 +14,6 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
@@ -43,12 +42,12 @@ public class LibraryCsvService implements LibraryService {
     }
 
     public LibraryCsvService() {
-        booksCsvFile = new File("PAO/ProiectPAO/src/project/library/BooksCsvFile.csv");
-        authorsCsvFile = new File("PAO/ProiectPAO/src/project/library/AuthorsCsvFile.csv");
-        membersCsvFile = new File("PAO/ProiectPAO/src/project/library/MembersCsvFile.csv");
-        borrowedBooksCsvFile = new File("PAO/ProiectPAO/src/project/library/BorrowedBooksCsvFile.csv");
-        novelsCsvFile = new File("PAO/ProiectPAO/src/project/library/NovelsCsvFile.csv");
-        auditCsvFile = new File("PAO/ProiectPAO/src/project/library/AuditFile.csv");
+        booksCsvFile = new File("resources/BooksCsvFile.csv");
+        authorsCsvFile = new File("resources/AuthorsCsvFile.csv");
+        membersCsvFile = new File("resources/MembersCsvFile.csv");
+        borrowedBooksCsvFile = new File("resources/BorrowedBooksCsvFile.csv");
+        novelsCsvFile = new File("resources/NovelsCsvFile.csv");
+        auditCsvFile = new File("resources/AuditFile.csv");
         checkFileExists(booksCsvFile);
         checkFileExists(authorsCsvFile);
         checkFileExists(membersCsvFile);
@@ -315,6 +314,7 @@ public class LibraryCsvService implements LibraryService {
         else book = FictionBook.newFictionBook().title(values[1]).authors(authors)
                 .datePublished(datePublished).buildFictionBook();
         book.setId(Integer.parseInt(values[0]));
+        book.setSubcategory(values[4]);
         return book;
     }
 
@@ -355,13 +355,6 @@ public class LibraryCsvService implements LibraryService {
                 .filter(diploma -> diploma.getId() == id)
                 .findFirst();
         return authorOptional.orElse(null);
-    }
-
-    public Book getBookById(int id) {
-        Optional<Book> bookOptional = getAllBooksSortedAlphabetically().stream()
-                .filter(book -> book.getId() == id)
-                .findFirst();
-        return bookOptional.orElse(null);
     }
 
     @Override
@@ -412,7 +405,6 @@ public class LibraryCsvService implements LibraryService {
         }
     }
 
-    @Override
     public boolean authorHasAtMostOneBook(Author author) {
         return getBooksByAuthor(author).size() <= 1;
     }
@@ -520,41 +512,23 @@ public class LibraryCsvService implements LibraryService {
 
     @Override
     public void deleteMembers(LibraryMember... membersToDelete) {
-        List<Integer> memberIds = new ArrayList<>();
-        try(FileReader fileReader = new FileReader(borrowedBooksCsvFile)) {
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            memberIds = bufferedReader.lines()
-                    .map(line -> line.split(","))
-                    .map(values -> Integer.parseInt(values[0]))
-                    .collect(Collectors.toList());
-            bufferedReader.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-        LinkedHashSet<LibraryMember> remainingMembers = new LinkedHashSet<>();
-        try (FileWriter fileWriter = new FileWriter(membersCsvFile, false)) {
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-
-            List<Integer> finalMemberIds = memberIds;
-            Arrays.asList(membersToDelete).forEach(memberToDelete -> {
-                if (finalMemberIds.contains(memberToDelete.getId()))
-                    System.out.println("Cannot delete member with id "+memberToDelete.getId()+" - still has borrowed books.");
-                else {
-                    List<LibraryMember> members = getAllMembers().stream()
-                            .filter(storedMember -> !Objects.equals(storedMember.getName(), memberToDelete.getName()))
-                            .sorted(Comparator.comparing(LibraryMember::getId))
-                            .collect(Collectors.toList());
-                    remainingMembers.addAll(members);
+        for (LibraryMember memberToDelete : membersToDelete) {
+            SortedSet<LibraryMember> allMembers = getAllMembers();
+            try (FileWriter fileWriter = new FileWriter(membersCsvFile, false)) {
+                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                List<LibraryMember> remainingMembers = allMembers.stream()
+                        .filter(storedMember -> !storedMember.equals(memberToDelete))
+                        .sorted(Comparator.comparing(LibraryMember::getId))
+                        .collect(Collectors.toList());
+                for (LibraryMember member : remainingMembers) {
+                    bufferedWriter.write(memberFormatForCsv(member));
                 }
-            });
-            for (LibraryMember member : remainingMembers) {
-                bufferedWriter.write(memberFormatForCsv(member));
+                bufferedWriter.close();
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
             }
-            audit("Deleted Members");
-            bufferedWriter.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
         }
+        audit("Deleted Members");
     }
 
     @Override
@@ -567,19 +541,36 @@ public class LibraryCsvService implements LibraryService {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-
-
-
+    @Override
+    public Set<Author> getAuthorsByMinNumOfBooks(int min) {
+        audit("Fetched Authors by Min. No. of Books");
+        return getAllAuthors().stream()
+                .filter(author -> getBooksByAuthor(author).size() >= min)
+                .collect(Collectors.toSet());
+    }
 
     @Override
     public LinkedHashSet<Book> getBooksBySubcategory(String subcategory) {
-        return null;
+        audit("Fetched Books By Subcategory");
+        return getAllBooksSortedAlphabetically().stream()
+                .filter(book -> book.getSubcategory().equalsIgnoreCase(subcategory))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @Override
-    public Set<LibraryMember> getMembersByCustomFilter(Predicate<LibraryMember> filter) {
-        return null;
+    public HashMap<Author, Book> getAuthorsWithAutobiography() {
+        HashMap<Author, Book> hashmap = new HashMap<>();
+        LinkedHashSet<Book> books = getBooksBySubcategory("autobiography").stream().
+                filter(book -> nonNull(book.getAuthors()))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        books.forEach(book -> book.getAuthors()
+                .forEach(author -> hashmap.put(author, book)));
+        return hashmap;
     }
+
+
+
+
 
     @Override
     public LinkedHashSet<Book> getDramasByGenre(String dramaGenre) {
@@ -596,23 +587,4 @@ public class LibraryCsvService implements LibraryService {
         return null;
     }
 
-    @Override
-    public LinkedHashSet<Book> findBooksByCustomFilter(Predicate<Book> filter) {
-        return null;
-    }
-
-    @Override
-    public Set<Author> getAuthorsByMinNumOfBooks(int min) {
-        return null;
-    }
-
-    @Override
-    public HashMap<Author, Book> getAuthorsWithAutobiography() {
-        return null;
-    }
-
-    @Override
-    public Set<Author> getAuthorByCustomFilter(Predicate<Author> filter) {
-        return null;
-    }
 }

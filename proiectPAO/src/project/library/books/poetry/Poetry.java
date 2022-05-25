@@ -25,11 +25,6 @@ public class Poetry extends Book {
         return "Poetry";
     }
 
-    @Override
-    public String getSubcategory() {
-        return null;
-    }
-
     public String getOriginalLanguage() {
         return originalLanguage;
     }
@@ -74,8 +69,8 @@ public class Poetry extends Book {
     }
 
     public static class PoetryBuilder extends BookBuilder<PoetryBuilder> {
-        private String originalLanguage;
-        private String translatedInto;
+        private String originalLanguage = " ";
+        private String translatedInto = " ";
 
         @Override
         public PoetryBuilder getThisBase() {

@@ -11,11 +11,7 @@ public class Drama extends Poetry {
         super(builder);
         this.dramaGenre = builder.dramaGenre;
         this.themes = builder.themes;
-    }
-
-    @Override
-    public String getSubcategory() {
-        return "Drama";
+        super.setSubcategory("Drama");
     }
 
     public String getDramaGenre() {

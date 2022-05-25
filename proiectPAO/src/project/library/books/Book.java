@@ -11,6 +11,8 @@ public abstract class Book {
     private LocalDate datePublished;
     private int copiesInLibrary;
 
+    private String subcategory = " ";
+
     protected Book(BookBuilder<?> builder) {
         this.title = builder.title;
         this.authors = builder.authors;
@@ -54,11 +56,13 @@ public abstract class Book {
 
     public abstract String getCategory();
 
-    public abstract String getSubcategory();
+    public String getSubcategory() { return subcategory; }
+
+    public void setSubcategory(String s) { this.subcategory = s; }
 
     @Override
     public String toString() {
-        return "Book: id=" + id + ", title='" + title + "',\n" +
+        return "Book: title='" + title + "',\n" +
                 "      authors=" + authors + ",\n" +
                 "      datePublished=" + datePublished + ",\n" +
                 "      copiesInLibrary=" + copiesInLibrary;
@@ -81,7 +85,7 @@ public abstract class Book {
     public abstract static class BookBuilder<T extends BookBuilder<T>>
     {
         //private int id;
-        private String title = "";
+        private String title = "no title";
         private Set<Author> authors;
         private LocalDate datePublished;
         private int copiesInLibrary = 1;

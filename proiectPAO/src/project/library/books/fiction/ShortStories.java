@@ -8,11 +8,7 @@ public class ShortStories extends FictionBook {
     private ShortStories(ShortStoriesBuilder builder) {
         super(builder);
         this.storiesType = builder.storiesType;
-    }
-
-    @Override
-    public String getSubcategory() {
-        return "Short Story Collection";
+        super.setSubcategory("Short Story Collection");
     }
 
     public String getStoriesType() {

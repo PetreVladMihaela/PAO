@@ -7,7 +7,6 @@ import project.library.members.LibraryMember;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.function.Predicate;
 
 public interface LibraryService {
     //private void audit(String actiune);
@@ -24,8 +23,6 @@ public interface LibraryService {
 
     void deleteBooks(Book... booksToDelete);
 
-    boolean authorHasAtMostOneBook(Author author);
-
     void deleteMembers(LibraryMember... membersToDelete);
 
     LibraryMember getMemberById(int id);
@@ -35,8 +32,6 @@ public interface LibraryService {
     void returnBorrowedBooks(int memberId, Book... returnedBooks);
 
     Set<LibraryMember> getMembersWithExpiredMembership();
-
-    Set<LibraryMember> getMembersByCustomFilter(Predicate<LibraryMember> filter);
 
     LinkedHashSet<Book> getBooksByTitle(String title);
 
@@ -56,11 +51,7 @@ public interface LibraryService {
 
     LinkedHashSet<Book> getDictionariesByLanguages(String writtenIn, String targetLanguage);
 
-    LinkedHashSet<Book> findBooksByCustomFilter(Predicate<Book> filter);
-
     Set<Author> getAuthorsByMinNumOfBooks(int min);
 
     HashMap<Author, Book> getAuthorsWithAutobiography();
-
-    Set<Author> getAuthorByCustomFilter(Predicate<Author> filter);
 }

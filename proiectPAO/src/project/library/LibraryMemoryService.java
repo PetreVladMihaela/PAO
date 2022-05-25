@@ -3,7 +3,6 @@ package project.library;
 import project.library.books.Author;
 import project.library.books.Book;
 import project.library.books.fiction.Novel;
-import project.library.books.nonfiction.Autobiography;
 import project.library.books.nonfiction.Dictionary;
 import project.library.books.nonfiction.Textbook;
 import project.library.books.poetry.Drama;
@@ -11,7 +10,6 @@ import project.library.members.LibraryMember;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
@@ -119,7 +117,6 @@ public class LibraryMemoryService implements LibraryService {
         });
     }
 
-    @Override
     public boolean authorHasAtMostOneBook(Author author) {
         return getBooksByAuthor(author).size() <= 1;
     }
@@ -128,13 +125,6 @@ public class LibraryMemoryService implements LibraryService {
     public Set<LibraryMember> getMembersWithExpiredMembership() {
         return getAllMembers().stream()
                 .filter(member -> LocalDate.now().compareTo(member.getMembershipExpires()) > 0)
-                .collect(Collectors.toSet());
-    }
-
-    @Override
-    public Set<LibraryMember> getMembersByCustomFilter(Predicate<LibraryMember> filter) {
-        return libraryMembers.stream()
-                .filter(filter)
                 .collect(Collectors.toSet());
     }
 
@@ -226,13 +216,6 @@ public class LibraryMemoryService implements LibraryService {
     }
 
     @Override
-    public LinkedHashSet<Book> findBooksByCustomFilter(Predicate<Book> filter) {
-        return libraryBooks.stream()
-                .filter(filter)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    @Override
     public Set<Author> getAuthorsByMinNumOfBooks(int min) {
         return bookAuthors.stream()
                 .filter(author -> getBooksByAuthor(author).size() >= min)
@@ -240,21 +223,15 @@ public class LibraryMemoryService implements LibraryService {
     }
 
     public HashMap<Author, Book> getAuthorsWithAutobiography() {
-        Set<Book> books = getBooksBySubcategory("autobiography");
         HashMap<Author, Book> hashmap = new HashMap<>();
-        books = books.stream().filter(book -> nonNull(book.getAuthors()))
-                .collect(Collectors.toSet());
-        books.forEach(book -> book.getAuthors().stream()
-                .sorted(Comparator.comparing(Author::getName))
+        System.out.println(getBooksBySubcategory("novel"));
+        LinkedHashSet<Book> books = getBooksBySubcategory("autobiography").stream().
+                filter(book -> nonNull(book.getAuthors()))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        System.out.println(books);
+        books.forEach(book -> book.getAuthors()
                 .forEach(author -> hashmap.put(author, book)));
         return hashmap;
-    }
-
-    @Override
-    public Set<Author> getAuthorByCustomFilter(Predicate<Author> filter) {
-        return bookAuthors.stream()
-                .filter(filter)
-                .collect(Collectors.toSet());
     }
 
 }
