@@ -280,8 +280,8 @@ public class MainProject {
 
         System.out.println("\nAll library members:");
         printMembersSet(libraryDbService.getAllMembers());
-    }
-}
+
+        //System.out.println("\n--------------------------------------------------------------------------------\n");
 
 //        libraryCsvService.addBooks(novel1, shortStories1, drama1);
 //        libraryCsvService.addBooks(shortStories1, novel2);
@@ -306,7 +306,7 @@ public class MainProject {
 //        printBooksSet(libraryCsvService.getAllBooksSortedAlphabetically());
 
 //        libraryCsvService.addMembers(member2, member1);
-//                libraryCsvService.addMembers(member3, member1);
+//        libraryCsvService.addMembers(member3, member1);
 ////        libraryCsvService.addBorrowedBooksToMember(3, novel1, novel2);
 ////        libraryCsvService.addBorrowedBooksToMember(2, shortStories1);
 ////        libraryCsvService.returnBorrowedBooks(3, novel2);
@@ -317,3 +317,6 @@ public class MainProject {
 //
 //        System.out.println(libraryCsvService.getMemberById(2));
 //        printMembersSet(libraryCsvService.getMembersWithExpiredMembership());
+    }
+}
+
